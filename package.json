@@ -1,0 +1,24 @@
+{
+  "name": "pretzel",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/three": "^0.170.0",
+    "typescript": "^5.7.2",
+    "vite": "^5.4.11"
+  },
+  "dependencies": {
+    "colyseus.js": "^0.15.26",
+    "gamestats.js": "^1.0.7",
+    "jolt-physics": "^0.29.0",
+    "keydrown": "^1.2.8",
+    "stats.js": "^0.17.0",
+    "three": "^0.170.0"
+  }
+}
