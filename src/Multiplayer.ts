@@ -16,7 +16,7 @@ export default class Multiplayer {
           console.log(room.sessionId, "received on", room.name, message);
         });
         room.onError((code, message) => {
-          console.log(room.sessionId, "couldn't join", room.name);
+          console.log(room.sessionId, "couldn't join", room.name, code, message);
         });
         console.log(room.sessionId, "joined", room.name, room.id);
       })

@@ -27,7 +27,7 @@ export default class Renderer {
     });
   }
 
-  public async update(deltaTime: number) {
+  public async update() {
     await this.postProcessing.renderAsync();
   }
 }

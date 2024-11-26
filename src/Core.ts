@@ -63,7 +63,7 @@ export default class Core {
     this.camera.update(deltaTime);
     this.player.update(deltaTime);
     this.physics.step(deltaTime);
-    await this.renderer.update(deltaTime);
+    await this.renderer.update();
 
     this.renderTimeClock.stop();
     const time = this.renderTimeClock.getElapsedTime() * 1000;

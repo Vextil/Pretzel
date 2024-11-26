@@ -60,7 +60,7 @@ export default class World {
     }
   }
 
-  pixelTexture(texture) {
+  pixelTexture(texture: THREE.Texture) {
     texture.minFilter = THREE.NearestFilter;
     texture.magFilter = THREE.NearestFilter;
     texture.generateMipmaps = false;

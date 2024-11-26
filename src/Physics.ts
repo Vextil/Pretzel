@@ -1,26 +1,25 @@
-import JoltTypes from "jolt-physics";
-import joltWasmUrl from "jolt-physics/jolt-physics.multithread.wasm.wasm?url";
+import JoltTypes from "jolt-physics/wasm";
 import * as THREE from "three/webgpu";
 
 // const frameRate = 60;
 
-const Jolt = await JoltTypes({
-  locateFile: () => joltWasmUrl,
-});
+const Jolt = await JoltTypes({});
+
 
 // Object layers
 const LAYER_NON_MOVING = 0;
 const LAYER_MOVING = 1;
 const NUM_OBJECT_LAYERS = 2;
 
-const DegreesToRadians = (deg) => deg * (Math.PI / 180.0);
-const wrapVec3 = (v) => new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
-const unwrapVec3 = (v) => new Jolt.Vec3(v.x, v.y, v.z);
-const wrapRVec3 = wrapVec3;
-const unwrapRVec3 = (v) => new Jolt.RVec3(v.x, v.y, v.z);
-const wrapQuat = (q) =>
+// const DegreesToRadians = (deg) => deg * (Math.PI / 180.0);
+const wrapVec3 = (v: JoltTypes.Vec3 | JoltTypes.RVec3) =>
+  new THREE.Vector3(v.GetX(), v.GetY(), v.GetZ());
+// const unwrapVec3 = (v) => new Jolt.Vec3(v.x, v.y, v.z);
+// const wrapRVec3 = wrapVec3;
+// const unwrapRVec3 = (v) => new Jolt.RVec3(v.x, v.y, v.z);
+const wrapQuat = (q: JoltTypes.Quat) =>
   new THREE.Quaternion(q.GetX(), q.GetY(), q.GetZ(), q.GetW());
-const unwrapQuat = (q) => new Jolt.Quat(q.x, q.y, q.z, q.w);
+// const unwrapQuat = (q) => new Jolt.Quat(q.x, q.y, q.z, q.w);
 
 export default class Physics {
   private jolt: JoltTypes.JoltInterface;
@@ -29,7 +28,10 @@ export default class Physics {
 
   private meshes: Array<THREE.Mesh> = [];
 
-  private meshMap = new WeakMap<THREE.Mesh, JoltTypes.Body | JoltTypes.Body[]>();
+  private meshMap = new WeakMap<
+    THREE.Mesh,
+    JoltTypes.Body | JoltTypes.Body[]
+  >();
 
   private _position = new THREE.Vector3();
   private _quaternion = new THREE.Quaternion();
@@ -49,7 +51,7 @@ export default class Physics {
     this.bodyInterface = this.physicsSystem.GetBodyInterface();
   }
 
-  private setupCollisionFiltering(settings) {
+  private setupCollisionFiltering(settings: JoltTypes.JoltSettings) {
     let objectFilter = new Jolt.ObjectLayerPairFilterTable(NUM_OBJECT_LAYERS);
     objectFilter.EnableCollision(LAYER_NON_MOVING, LAYER_MOVING);
     objectFilter.EnableCollision(LAYER_MOVING, LAYER_MOVING);
@@ -219,7 +221,7 @@ export default class Physics {
     if (mesh instanceof THREE.InstancedMesh) {
       const bodies = this.meshMap.get(mesh);
 
-      const body = bodies[index];
+      const body = (bodies as JoltTypes.Body[])[index];
 
       this.bodyInterface.RemoveBody(body.GetID());
       this.bodyInterface.DestroyBody(body.GetID());
@@ -236,7 +238,7 @@ export default class Physics {
         shape
       );
 
-      bodies[index] = body2;
+      (bodies as JoltTypes.Body[])[index] = body2;
     } else {
       // TODO: Implement this
     }
@@ -245,15 +247,17 @@ export default class Physics {
   setMeshVelocity(mesh: THREE.Mesh, velocity: THREE.Vector3, index = 0) {
     let body = this.meshMap.get(mesh);
     if (mesh instanceof THREE.InstancedMesh) {
-      body = body[index];
+      body = (body as JoltTypes.Body[])[index];
     }
-    (body as JoltTypes.Body).SetLinearVelocity(new Jolt.Vec3(velocity.x, velocity.y, velocity.z));
+    (body as JoltTypes.Body).SetLinearVelocity(
+      new Jolt.Vec3(velocity.x, velocity.y, velocity.z)
+    );
   }
 
   getMeshVelocity(mesh: THREE.Mesh, index = 0): THREE.Vector3 {
     let body = this.meshMap.get(mesh);
     if (mesh instanceof THREE.InstancedMesh) {
-      body = body[index];
+      body = (body as JoltTypes.Body[])[index];
     }
     return wrapVec3((body as JoltTypes.Body).GetLinearVelocity());
   }
@@ -276,7 +280,7 @@ export default class Physics {
 
       if (mesh instanceof THREE.InstancedMesh) {
         const array = mesh.instanceMatrix.array;
-        const bodies = this.meshMap.get(mesh);
+        const bodies = this.meshMap.get(mesh) as JoltTypes.Body[];
 
         for (let j = 0; j < bodies.length; j++) {
           const body = bodies[j];
@@ -294,7 +298,7 @@ export default class Physics {
 
         instancedMeshesToUpdate.add(mesh);
       } else {
-        const body = this.meshMap.get(mesh);
+        const body = this.meshMap.get(mesh) as JoltTypes.Body;
 
         const position = body.GetPosition();
         const rotation = body.GetRotation();

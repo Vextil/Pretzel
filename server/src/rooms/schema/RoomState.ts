@@ -1,4 +1,4 @@
-import { Schema, Context, type, MapSchema } from "@colyseus/schema";
+import { Schema, type, MapSchema } from "@colyseus/schema";
 
 export class Entity extends Schema {
   @type("number") x: number = 0;
