@@ -16,7 +16,7 @@ export default class Renderer {
     this.instance.setSize(window.innerWidth, window.innerHeight);
     this.instance.setPixelRatio(window.devicePixelRatio);
     this.instance.shadowMap.enabled = true;
-    this.instance.shadowMap.type = THREE.BasicShadowMap;
+    this.instance.shadowMap.type = THREE.PCFSoftShadowMap;
 
     this.postProcessing = new THREE.PostProcessing(this.instance);
     const scenePass = pixelationPass(Core.scene, Core.camera.instance, uniform(1), uniform(1), uniform(1));

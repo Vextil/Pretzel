@@ -3,11 +3,10 @@ export default class Input {
 
   constructor() {
     window.addEventListener("keydown", (event) => {
-        console.log(event.key);
-      this.keyboard[event.key] = true;
+      this.keyboard[event.key.toLowerCase()] = true;
     });
     window.addEventListener("keyup", (event) => {
-      this.keyboard[event.key] = false;
+      this.keyboard[event.key.toLowerCase()] = false;
     });
   }
 

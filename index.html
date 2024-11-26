@@ -1,16 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8" />
-        <title>Pretzel</title>
-        <style>
-            body {
-                margin: 0;
-            }
-        </style>
-    </head>
-    <body>
-        <canvas id="canvas"></canvas>
-        <script type="module" src="/src/Core.ts"></script>
-    </body>
+  <head>
+    <meta charset="utf-8" />
+    <title>Pretzel</title>
+    <style>
+      html {
+        overflow: hidden;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        overscroll-behavior: none;
+      }
+
+      body {
+        overflow: hidden;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+    <script type="module" src="/src/Core.ts"></script>
+  </body>
 </html>

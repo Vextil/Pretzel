@@ -10,7 +10,7 @@ export default class World {
     texChecker.repeat.set(3, 3);
 
     const floor = new THREE.Mesh(
-      new THREE.BoxGeometry(100, 0.1, 100),
+      new THREE.BoxGeometry(1000, 0.1, 1000),
       new THREE.MeshPhysicalMaterial({ map: texChecker })
     );
     floor.position.y = 0;
@@ -41,7 +41,7 @@ export default class World {
 
     Core.scene.add(spotLight);
 
-    const capsuleMesh = new THREE.IcosahedronGeometry(1, 0);
+    const capsuleMesh = new THREE.BoxGeometry(1, 1);
     const capsuleMaterial = new THREE.MeshPhongMaterial({
       color: 0x68b7e9,
       emissive: 0x4f7e8b,
