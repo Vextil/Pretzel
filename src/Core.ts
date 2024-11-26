@@ -60,9 +60,9 @@ export default class Core {
     }
     this.renderTimeClock.start();
 
-    this.camera.update(deltaTime);
     this.player.update(deltaTime);
     this.physics.step(deltaTime);
+    this.camera.update(deltaTime);
     await this.renderer.update();
 
     this.renderTimeClock.stop();
