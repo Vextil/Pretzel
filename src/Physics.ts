@@ -40,7 +40,7 @@ export default class Physics {
 
   private accumulator = 0.0;
 
-  public useFixedTimestep: boolean = true;
+  public useFixedTimestep: boolean = false;
   public fixedTimeStep: number = 1.0 / 60.0;
 
   constructor() {
