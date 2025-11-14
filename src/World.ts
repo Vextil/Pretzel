@@ -52,7 +52,7 @@ export default class World {
     for (let i = 0; i < 10; i++) {
       const capsule = new THREE.Mesh(capsuleMesh, capsuleMaterial);
       capsule.position.y = 10 + i;
-      capsule.rotateX(Math.random() * Math.PI * 2);
+      capsule.rotateX(i * Math.PI * 2);
       capsule.userData.physics = { mass: 1 };
       capsule.castShadow = true;
       capsule.receiveShadow = true;

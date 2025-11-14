@@ -36,6 +36,7 @@ export default class Core {
     this.physics = new Physics();
 
     this.physics.addScene(this.scene);
+
     requestAnimationFrame(() => this.renderUpdate());
   }
 
@@ -47,7 +48,7 @@ export default class Core {
     this.player.update(deltaTime);
     this.physics.step(deltaTime);
     this.camera.update(deltaTime);
-    this.renderer.update();
+    await this.renderer.update();
 
     this.stats.update();
   }

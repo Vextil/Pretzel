@@ -38,6 +38,8 @@ export default class Physics {
 
   private _matrix = new THREE.Matrix4();
 
+  private accumulator = 0.0;
+
   constructor() {
     const settings = new Jolt.JoltSettings();
     this.setupCollisionFiltering(settings);
@@ -61,11 +63,11 @@ export default class Physics {
 
     let bpInterface = new Jolt.BroadPhaseLayerInterfaceTable(
       NUM_OBJECT_LAYERS,
-      NUM_BROAD_PHASE_LAYERS,
+      NUM_BROAD_PHASE_LAYERS
     );
     bpInterface.MapObjectToBroadPhaseLayer(
       LAYER_NON_MOVING,
-      BP_LAYER_NON_MOVING,
+      BP_LAYER_NON_MOVING
     );
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_MOVING, BP_LAYER_MOVING);
 
@@ -76,7 +78,7 @@ export default class Physics {
         settings.mBroadPhaseLayerInterface,
         NUM_BROAD_PHASE_LAYERS,
         settings.mObjectLayerPairFilter,
-        NUM_OBJECT_LAYERS,
+        NUM_OBJECT_LAYERS
       );
   }
 
@@ -90,7 +92,7 @@ export default class Physics {
       return new Jolt.BoxShape(
         new Jolt.Vec3(sx, sy, sz),
         0.05 * Math.min(sx, sy, sz),
-        undefined,
+        undefined
       );
     } else if (geometry instanceof THREE.SphereGeometry) {
       const parameters = geometry.parameters;
@@ -113,20 +115,27 @@ export default class Physics {
   }
 
   addScene(scene: THREE.Scene) {
+    const meshes: THREE.Mesh[] = [];
     scene.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         const physics = child.userData.physics;
-
         if (physics) {
-          this.addMesh(
-            child,
-            physics.mass,
-            physics.restitution,
-            physics.locked,
-          );
+          meshes.push(child);
         }
       }
     });
+
+    // Is this necessary for deterministic physics?
+    // meshes.sort((a, b) => {
+    //   const aKey = `${a.position.x},${a.position.y},${a.position.z}`;
+    //   const bKey = `${b.position.x},${b.position.y},${b.position.z}`;
+    //   return aKey.localeCompare(bKey);
+    // });
+
+    for (const mesh of meshes) {
+      const physics = mesh.userData.physics;
+      this.addMesh(mesh, physics.mass, physics.restitution, physics.locked);
+    }
   }
 
   addMesh(mesh: THREE.Mesh, mass = 0, restitution = 0, locked = false) {
@@ -143,7 +152,7 @@ export default class Physics {
             mass,
             restitution,
             locked,
-            shape,
+            shape
           );
 
     if (mass > 0) {
@@ -157,7 +166,7 @@ export default class Physics {
     mass: number,
     restitution: number,
     locked: boolean,
-    shape: JoltTypes.Shape,
+    shape: JoltTypes.Shape
   ) {
     const array = mesh.instanceMatrix.array;
 
@@ -166,10 +175,10 @@ export default class Physics {
     for (let i = 0; i < mesh.count; i++) {
       const position = this._position.fromArray(array, i * 16 + 12);
       const quaternion = this._quaternion.setFromRotationMatrix(
-        this._matrix.fromArray(array, i * 16),
+        this._matrix.fromArray(array, i * 16)
       );
       bodies.push(
-        this.createBody(position, quaternion, mass, restitution, locked, shape),
+        this.createBody(position, quaternion, mass, restitution, locked, shape)
       );
     }
 
@@ -182,7 +191,7 @@ export default class Physics {
     mass: number,
     restitution: number,
     locked: boolean,
-    shape: JoltTypes.Shape,
+    shape: JoltTypes.Shape
   ) {
     const pos = new Jolt.RVec3(position.x, position.y, position.z);
     const rot = new Jolt.Quat(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -196,7 +205,7 @@ export default class Physics {
       pos,
       rot,
       motion,
-      layer,
+      layer
     );
     creationSettings.mRestitution = restitution;
 
@@ -234,7 +243,7 @@ export default class Physics {
         physics.mass,
         physics.restitution,
         physics.locked,
-        shape,
+        shape
       );
 
       (bodies as JoltTypes.Body[])[index] = body2;
@@ -249,7 +258,7 @@ export default class Physics {
       body = (body as JoltTypes.Body[])[index];
     }
     (body as JoltTypes.Body).SetLinearVelocity(
-      new Jolt.Vec3(velocity.x, velocity.y, velocity.z),
+      new Jolt.Vec3(velocity.x, velocity.y, velocity.z)
     );
   }
 
@@ -263,14 +272,18 @@ export default class Physics {
 
   //
   step(deltaTime: number) {
+    const fixedTimeStep = 1.0 / 60.0;
+
+    this.accumulator += deltaTime;
+
     // Don't go below 30 Hz to prevent spiral of death
-    deltaTime = Math.min(deltaTime, 1.0 / 30.0);
+    this.accumulator = Math.min(this.accumulator, 1.0 / 30.0);
 
-    // When running below 55 Hz, do 2 steps instead of 1
-    const numSteps = deltaTime > 1.0 / 55.0 ? 2 : 1;
-
-    // Step the physics world
-    this.jolt.Step(deltaTime, numSteps);
+    // Step physics with fixed timestep
+    while (this.accumulator >= fixedTimeStep) {
+      this.jolt.Step(fixedTimeStep, 1);
+      this.accumulator -= fixedTimeStep;
+    }
 
     let instancedMeshesToUpdate = new Set<THREE.InstancedMesh>();
 
