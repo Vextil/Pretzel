@@ -40,6 +40,9 @@ export default class Physics {
 
   private accumulator = 0.0;
 
+  public useFixedTimestep: boolean = true;
+  public fixedTimeStep: number = 1.0 / 60.0;
+
   constructor() {
     const settings = new Jolt.JoltSettings();
     this.setupCollisionFiltering(settings);
@@ -272,17 +275,24 @@ export default class Physics {
 
   //
   step(deltaTime: number) {
-    const fixedTimeStep = 1.0 / 60.0;
-
-    this.accumulator += deltaTime;
-
-    // Don't go below 30 Hz to prevent spiral of death
-    this.accumulator = Math.min(this.accumulator, 1.0 / 30.0);
-
-    // Step physics with fixed timestep
-    while (this.accumulator >= fixedTimeStep) {
-      this.jolt.Step(fixedTimeStep, 1);
-      this.accumulator -= fixedTimeStep;
+    if (this.useFixedTimestep) {
+      // Fixed timestep necessary for determinism
+      this.accumulator += deltaTime;
+      // Don't go below 30 Hz to prevent spiral of death
+      this.accumulator = Math.min(this.accumulator, 1.0 / 30.0);
+      // Step physics
+      while (this.accumulator >= this.fixedTimeStep) {
+        this.jolt.Step(this.fixedTimeStep, 1);
+        this.accumulator -= this.fixedTimeStep;
+      }
+    } else {
+      // Variable timestep: WARNING!!! Non-deterministic!
+      // Don't go below 30 Hz to prevent spiral of death
+      deltaTime = Math.min(deltaTime, 1.0 / 30.0);
+      // When running below 55 Hz, do 2 steps instead of 1
+      const numSteps = deltaTime > 1.0 / 55.0 ? 2 : 1;
+      // Step physics
+      this.jolt.Step(deltaTime, numSteps);
     }
 
     let instancedMeshesToUpdate = new Set<THREE.InstancedMesh>();
