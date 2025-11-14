@@ -11,7 +11,7 @@ export default class World {
 
     const floor = new THREE.Mesh(
       new THREE.BoxGeometry(1000, 0.1, 1000),
-      new THREE.MeshPhysicalMaterial({ map: texChecker })
+      new THREE.MeshPhysicalMaterial({ map: texChecker }),
     );
     floor.position.y = 0;
     floor.receiveShadow = true;
@@ -27,7 +27,7 @@ export default class World {
       100,
       Math.PI / 4,
       0.02,
-      1
+      1,
     );
     spotLight.position.set(3, 10, 0);
     const target = spotLight.target;

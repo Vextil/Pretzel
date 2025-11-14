@@ -5,7 +5,6 @@ import * as THREE from "three/webgpu";
 
 const Jolt = await JoltTypes({});
 
-
 // Object layers
 const LAYER_NON_MOVING = 0;
 const LAYER_MOVING = 1;
@@ -62,11 +61,11 @@ export default class Physics {
 
     let bpInterface = new Jolt.BroadPhaseLayerInterfaceTable(
       NUM_OBJECT_LAYERS,
-      NUM_BROAD_PHASE_LAYERS
+      NUM_BROAD_PHASE_LAYERS,
     );
     bpInterface.MapObjectToBroadPhaseLayer(
       LAYER_NON_MOVING,
-      BP_LAYER_NON_MOVING
+      BP_LAYER_NON_MOVING,
     );
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_MOVING, BP_LAYER_MOVING);
 
@@ -77,7 +76,7 @@ export default class Physics {
         settings.mBroadPhaseLayerInterface,
         NUM_BROAD_PHASE_LAYERS,
         settings.mObjectLayerPairFilter,
-        NUM_OBJECT_LAYERS
+        NUM_OBJECT_LAYERS,
       );
   }
 
@@ -91,7 +90,7 @@ export default class Physics {
       return new Jolt.BoxShape(
         new Jolt.Vec3(sx, sy, sz),
         0.05 * Math.min(sx, sy, sz),
-        undefined
+        undefined,
       );
     } else if (geometry instanceof THREE.SphereGeometry) {
       const parameters = geometry.parameters;
@@ -100,7 +99,7 @@ export default class Physics {
       return new Jolt.SphereShape(radius, undefined);
     } else if (geometry instanceof THREE.CapsuleGeometry) {
       const parameters = geometry.parameters;
-      const height = parameters.length !== undefined ? parameters.length : 1;
+      const height = parameters.height !== undefined ? parameters.height : 1;
       const radius = parameters.radius !== undefined ? parameters.radius : 1;
       return new Jolt.CapsuleShape(height / 2, radius, undefined);
     } else if (geometry instanceof THREE.IcosahedronGeometry) {
@@ -123,7 +122,7 @@ export default class Physics {
             child,
             physics.mass,
             physics.restitution,
-            physics.locked
+            physics.locked,
           );
         }
       }
@@ -144,7 +143,7 @@ export default class Physics {
             mass,
             restitution,
             locked,
-            shape
+            shape,
           );
 
     if (mass > 0) {
@@ -158,7 +157,7 @@ export default class Physics {
     mass: number,
     restitution: number,
     locked: boolean,
-    shape: JoltTypes.Shape
+    shape: JoltTypes.Shape,
   ) {
     const array = mesh.instanceMatrix.array;
 
@@ -167,10 +166,10 @@ export default class Physics {
     for (let i = 0; i < mesh.count; i++) {
       const position = this._position.fromArray(array, i * 16 + 12);
       const quaternion = this._quaternion.setFromRotationMatrix(
-        this._matrix.fromArray(array, i * 16)
+        this._matrix.fromArray(array, i * 16),
       );
       bodies.push(
-        this.createBody(position, quaternion, mass, restitution, locked, shape)
+        this.createBody(position, quaternion, mass, restitution, locked, shape),
       );
     }
 
@@ -183,7 +182,7 @@ export default class Physics {
     mass: number,
     restitution: number,
     locked: boolean,
-    shape: JoltTypes.Shape
+    shape: JoltTypes.Shape,
   ) {
     const pos = new Jolt.RVec3(position.x, position.y, position.z);
     const rot = new Jolt.Quat(rotation.x, rotation.y, rotation.z, rotation.w);
@@ -197,7 +196,7 @@ export default class Physics {
       pos,
       rot,
       motion,
-      layer
+      layer,
     );
     creationSettings.mRestitution = restitution;
 
@@ -235,7 +234,7 @@ export default class Physics {
         physics.mass,
         physics.restitution,
         physics.locked,
-        shape
+        shape,
       );
 
       (bodies as JoltTypes.Body[])[index] = body2;
@@ -250,7 +249,7 @@ export default class Physics {
       body = (body as JoltTypes.Body[])[index];
     }
     (body as JoltTypes.Body).SetLinearVelocity(
-      new Jolt.Vec3(velocity.x, velocity.y, velocity.z)
+      new Jolt.Vec3(velocity.x, velocity.y, velocity.z),
     );
   }
 

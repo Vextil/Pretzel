@@ -47,7 +47,7 @@ export default class Core {
     this.player.update(deltaTime);
     this.physics.step(deltaTime);
     this.camera.update(deltaTime);
-    await this.renderer.update();
+    this.renderer.update();
 
     this.stats.update();
   }

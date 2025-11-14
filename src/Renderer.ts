@@ -20,23 +20,23 @@ export default class Renderer {
     }
     this.instance.shadowMap.enabled = true;
     this.instance.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.instance.init();
 
     this.postProcessing = new THREE.PostProcessing(this.instance);
     const scenePass = pixelationPass(
       Core.scene,
       Core.camera.instance,
-      THREE.uniform(1),
-      THREE.uniform(1),
-      THREE.uniform(1)
+      new THREE.UniformNode(1),
+      new THREE.UniformNode(1),
+      new THREE.UniformNode(1),
     );
     this.postProcessing.outputNode = scenePass;
-
     window.addEventListener("resize", () => {
       this.instance.setSize(window.innerWidth, window.innerHeight);
     });
   }
 
   public async update() {
-    await this.postProcessing.renderAsync();
+    this.postProcessing.render();
   }
 }

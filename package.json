@@ -10,16 +10,16 @@
     "stats": "npx vite-bundle-visualizer"
   },
   "devDependencies": {
-    "@types/three": "^0.170.0",
-    "typescript": "^5.7.2",
-    "vite": "^5.4.11"
+    "@types/three": "^0.181.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2"
   },
   "dependencies": {
-    "colyseus.js": "^0.15.26",
+    "colyseus.js": "^0.16.22",
     "gamestats.js": "^1.0.7",
-    "jolt-physics": "^0.29.0",
+    "jolt-physics": "^0.39.0",
     "keydrown": "^1.2.8",
     "stats.js": "^0.17.0",
-    "three": "^0.170.0"
+    "three": "^0.181.1"
   }
 }
