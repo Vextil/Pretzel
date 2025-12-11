@@ -8,6 +8,8 @@ import Physics from "./Physics";
 import Player from "./Player";
 import Input from "./Input";
 
+//https://developers.rune.ai/blog/making-js-deterministic-for-fun-and-glory
+
 export default class Core {
   public static camera: Camera;
   public static renderer: Renderer;
